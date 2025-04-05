@@ -10,6 +10,7 @@ import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
 import AboutScreen from "../screens/AboutScreen";
 import JobsScreen from "../screens/JobsScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 
 const Tab = createBottomTabNavigator();
@@ -33,7 +34,6 @@ const TabNavigator = () => {
         tabBarStyle:{backgroundColor: '#F8FAFC'}
     })}>
                 <Tab.Screen name="Home" component={HomeScreen} options={{}}/>
-                
                 <Tab.Screen name="Job" component={JobsScreen} options={{}}/>
                 <Tab.Screen name="User" component={UserScreen} options={{}}/>
 
@@ -47,6 +47,7 @@ const AppNavigator = () => {
             <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
             <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
             <Stack.Screen name="About" component={AboutScreen} options={{headerShown: false}} />
+            <Stack.Screen name="Settings" component={SettingsScreen} options={{headerShown: false}} />
             <Stack.Screen name="MainTabs" component={TabNavigator} options={{headerShown: false}} />
         </Stack.Navigator>
     )
