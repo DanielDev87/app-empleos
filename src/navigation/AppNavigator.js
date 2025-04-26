@@ -11,6 +11,7 @@ import RegisterScreen from "../screens/auth/RegisterScreen";
 import AboutScreen from "../screens/AboutScreen";
 import JobsScreen from "../screens/JobsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import NotificationScreen from "../screens/NotificationScreen"
 
 
 const Tab = createBottomTabNavigator();
@@ -26,6 +27,8 @@ const TabNavigator = () => {
                 iconName = "briefcase-outline"
             }else if (route.name === "User") {
                 iconName = "person-outline"
+            }else if (route.name === "Notification") {
+                iconName = "notifications-outline"
             }
             return <Ionicons name={iconName} size={size} color={color} />
         },
@@ -36,6 +39,7 @@ const TabNavigator = () => {
                 <Tab.Screen name="Home" component={HomeScreen} options={{}}/>
                 <Tab.Screen name="Job" component={JobsScreen} options={{}}/>
                 <Tab.Screen name="User" component={UserScreen} options={{}}/>
+                <Tab.Screen name="Notification" component={NotificationScreen} options={{}}/>
 
              </Tab.Navigator>)
 }

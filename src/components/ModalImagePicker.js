@@ -1,25 +1,25 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, Image } from 'react-native';
 import colors from '../constants/colors';
 
-const ModalEditProfile = ({ visible, title, value, onChangeText, onSave, onCancel }) => {
+const ModalImagePicker = ({ visible, imageUri, onChooseImage, 
+  onSave, onCancel }) => {
   return (
-    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onCancel}>
+    <Modal visible={visible} animationType="slide" transparent={true} 
+    onRequestClose={onCancel}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{title}</Text>
-          {/* Campo de texto para edición */}
-          <TextInput
-            style={styles.modalInput}
-            placeholder={`Nuevo ${title.toLowerCase()}`}
-            value={value}
-            onChangeText={onChangeText}
-          />
+          <Text style={styles.modalTitle}>Cambiar Foto de Perfil</Text>
+          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <TouchableOpacity style={styles.imageButton} onPress={onChooseImage}>
+            <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
+          </TouchableOpacity>
           <View style={styles.modalButtons}>
             <TouchableOpacity style={styles.modalButton} onPress={onCancel}>
               <Text style={styles.modalButtonText}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.modalButton, styles.saveButton]} onPress={onSave}>
+            <TouchableOpacity style={[styles.modalButton, styles.saveButton]}
+             onPress={onSave}>
               <Text style={styles.modalButtonText}>Guardar</Text>
             </TouchableOpacity>
           </View>
@@ -49,14 +49,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: colors.default,
   },
-  modalInput: {
-    width: '100%',
-    height: 40,
-    borderColor: colors.variante3,
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     marginBottom: 20,
+  },
+  imageButton: {
+    backgroundColor: colors.variante3,
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  imageButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   modalButtons: {
     flexDirection: 'row',
@@ -80,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ModalEditProfile;
+export default ModalImagePicker;

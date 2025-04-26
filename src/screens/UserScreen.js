@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, Image } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import colors from '../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,16 @@ import { showMessage } from 'react-native-flash-message';
 const UserScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // Estado para el modal de confirmación
+  const [imageUri, setImageUri] = useState(null)
+  const defaultImage = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+
+  useEffect(() => {
+    if (user && user.photoURL) {
+      setImageUri(user.photoURL)
+    } else {
+      setImageUri(defaultImage)
+    }
+  }, [user])
 
   const handleLogout = async () => {
     try {
@@ -32,6 +42,10 @@ const UserScreen = ({ navigation }) => {
 
   return (
     <LinearGradient colors={colors.gradienteAccion} style={styles.container}>
+      <View style={styles.info}>
+          <Text style={styles.label}>Foto de perfil</Text>
+          <Image source={{ uri: imageUri || defaultImage }} style={styles.profileImage} />
+      </View>
       <View style={styles.header}>
         <Text style={styles.title}>{user?.displayName || 'Usuario'}</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
@@ -121,6 +135,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  logoutButton: {
+    backgroundColor: '#A72C2A',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  logoutText: {
+    color: '#FFF',
+    fontSize: 16,
   },
 });
 
