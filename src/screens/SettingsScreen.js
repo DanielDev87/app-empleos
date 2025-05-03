@@ -45,7 +45,7 @@ const SettingsScreen = () => {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         quality: 1,
       });
@@ -159,9 +159,7 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Volver</Text>
-      </TouchableOpacity>
+      
       <Text style={styles.subtitle}>Ajustes</Text>
       <Text style={styles.sectionTitle}>Sobre tu cuenta</Text>
 
@@ -223,6 +221,9 @@ const SettingsScreen = () => {
         onSave={uploadImage}
         onCancel={() => setImageModalVisible(false)}
       />
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>Volver</Text>
+      </TouchableOpacity>
     </View>
   );
 };

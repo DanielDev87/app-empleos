@@ -1,4 +1,5 @@
 import React from "react";
+
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +13,7 @@ import AboutScreen from "../screens/AboutScreen";
 import JobsScreen from "../screens/JobsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import NotificationScreen from "../screens/NotificationScreen"
+
 
 
 const Tab = createBottomTabNavigator();
@@ -52,7 +54,9 @@ const AppNavigator = () => {
             <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
             <Stack.Screen name="About" component={AboutScreen} options={{headerShown: false}} />
             <Stack.Screen name="Settings" component={SettingsScreen} options={{headerShown: false}} />
+            
             <Stack.Screen name="MainTabs" component={TabNavigator} options={{headerShown: false}} />
+
         </Stack.Navigator>
     )
 }
