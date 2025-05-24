@@ -1,35 +1,37 @@
-import { initializeApp, getApps } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  EXPO_PUBLIC_API_KEY,
-  EXPO_PUBLIC_AUTH_DOMAIN,
-  EXPO_PUBLIC_PROJECT_ID,
-  EXPO_PUBLIC_STORAGE_BUCKET,
-  EXPO_PUBLIC_MESSAGING_SENDER_ID,
-  EXPO_PUBLIC_APP_ID,
-  EXPO_PUBLIC_MEASUREMENT_ID,
-} from '@env';
+import Constants from 'expo-constants';
 
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: EXPO_PUBLIC_API_KEY,
-  authDomain: EXPO_PUBLIC_AUTH_DOMAIN,
-  projectId: EXPO_PUBLIC_PROJECT_ID,
-  storageBucket: EXPO_PUBLIC_STORAGE_BUCKET,
-  messagingSenderId: EXPO_PUBLIC_MESSAGING_SENDER_ID,
-  appId: EXPO_PUBLIC_APP_ID,
-  measurementId: EXPO_PUBLIC_MEASUREMENT_ID,
+  apiKey: "AIzaSyA7WpFJX6iHAXZrXvXjHlxjrPXoHUZRbPg",
+  authDomain: "proyecto-app-empleos.firebaseapp.com",
+  projectId: "proyecto-app-empleos",
+  storageBucket: "proyecto-app-empleos.appspot.com",  // URL directa del bucket
+  messagingSenderId: "1048561511871",
+  appId: "1:1048561511871:web:c5a8e63f4b4b2c9f05cca5"
 };
 
-// Verifica si Firebase ya está inicializado
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Initialize Firebase only if it hasn't been initialized
+let app;
+try {
+  app = getApp();
+} catch {
+  app = initializeApp(firebaseConfig);
+}
 
-// Inicializa Auth con persistencia
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
-
+// Initialize services
+const auth = getAuth(app);
+const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, storage };
+// Log configuration for debugging
+console.log('Firebase configurado:', {
+  app: app.name,
+  bucket: firebaseConfig.storageBucket,
+  platform: Constants.platform
+});
+
+export { auth, db, storage, app };
