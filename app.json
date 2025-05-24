@@ -6,23 +6,48 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "plugins": [
+      "expo-image-picker",
+      "expo-notifications",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "La aplicación necesita acceso a la cámara para tomar fotos de perfil."
+        }
+      ]
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.app.empleos",
+      "infoPlist": {
+        "NSCameraUsageDescription": "La aplicación necesita acceso a la cámara para tomar fotos de perfil.",
+        "NSPhotoLibraryUsageDescription": "La aplicación necesita acceso a la galería para seleccionar fotos de perfil."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.app.empleos",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
     }
   }
 }
