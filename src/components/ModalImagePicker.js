@@ -1,25 +1,33 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Image } from 'react-native';
 import colors from '../constants/colors';
+import { Ionicons } from '@expo/vector-icons';
 
-const ModalImagePicker = ({ visible, imageUri, onChooseImage, 
-  onSave, onCancel }) => {
+const ModalImagePicker = ({ visible, imageUri, onChooseImage, onTakePhoto, onSave, onCancel }) => {
   return (
-    <Modal visible={visible} animationType="slide" transparent={true} 
-    onRequestClose={onCancel}>
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onCancel}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Cambiar Foto de Perfil</Text>
           <Image source={{ uri: imageUri }} style={styles.imagePreview} />
-          <TouchableOpacity style={styles.imageButton} onPress={onChooseImage}>
-            <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
-          </TouchableOpacity>
+          
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity style={styles.imageButton} onPress={onChooseImage}>
+              <Ionicons name="images-outline" size={24} color={colors.luminous} />
+              <Text style={styles.imageButtonText}>Galería</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.imageButton} onPress={onTakePhoto}>
+              <Ionicons name="camera-outline" size={24} color={colors.luminous} />
+              <Text style={styles.imageButtonText}>Cámara</Text>
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.modalButtons}>
             <TouchableOpacity style={styles.modalButton} onPress={onCancel}>
               <Text style={styles.modalButtonText}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.modalButton, styles.saveButton]}
-             onPress={onSave}>
+            <TouchableOpacity style={[styles.modalButton, styles.saveButton]} onPress={onSave}>
               <Text style={styles.modalButtonText}>Guardar</Text>
             </TouchableOpacity>
           </View>
@@ -55,16 +63,23 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 20,
   },
-  imageButton: {
-    backgroundColor: colors.variante3,
-    padding: 10,
-    borderRadius: 5,
+  optionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
     marginBottom: 20,
   },
+  imageButton: {
+    backgroundColor: colors.variante3,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '45%',
+  },
   imageButtonText: {
-    color: '#fff',
+    color: colors.luminous,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginTop: 5,
   },
   modalButtons: {
     flexDirection: 'row',
