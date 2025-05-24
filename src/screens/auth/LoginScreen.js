@@ -1,9 +1,10 @@
 import React, {useState} from 'react'
 import colors from '../../constants/colors'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../services/firebaseConfig'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('')
@@ -14,10 +15,9 @@ const LoginScreen = ({navigation}) => {
     const handleLogin = ()=>{
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential)=>{
-        console.log("Usuario logueado: ", userCredential.user)
-        setError(false)
-        setErrorMessage("")
-        navigation.navigate('MainTabs',{screen: 'Home'})
+        setError(false);
+        setErrorMessage('');
+        navigation.replace('MainTabs');
       })
       .catch((error)=>{
         setError(true)
@@ -25,123 +25,180 @@ const LoginScreen = ({navigation}) => {
       })
     }
 
-    
-  return (
-    <View style={styles.container}>
-        <Image style={styles.logo} source={require('../../../assets/avatardanidev.png')} />
-        <Text style={styles.title}>¿En Busqueda de Empleo?</Text>
-        <Text style={styles.title}>Inicia sesión con tu cuenta</Text>
-        <View style={styles.inputContainer}>
-        <Icon name="email-outline" size={24} style={styles.icon} /> 
-        <TextInput
-          style={styles.input}
-          placeholder="correo electrónico"
-          value={email}
-          onChangeText={setEmail}
-        /> 
-        </View>
-        <View style={styles.inputContainer}>
-        <Icon name="lock-outline" size={24} style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="contraseña"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-      </View>
-      {error && (
-        <Text style={styles.errorMessage}>Revisa tus credenciales e intenta nuevamente 😕 </Text>
-      )}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Iniciar sesión</Text>
-        </TouchableOpacity>
+    return (
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <LinearGradient 
+          colors={[colors.variante2, colors.variante5]} 
+          style={styles.container}
+        >
+          <View style={styles.logoContainer}>
+            <Image 
+              style={styles.logo} 
+              source={require('../../../assets/avatardanidev.png')} 
+            />
+            <Text style={styles.welcomeText}>¡Bienvenido de nuevo!</Text>
+            <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+          </View>
 
-    <View style={styles.registerContainer}>
-        <Text style={styles.registerText}>¿Aun no tienes una cuenta? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.registerLink}>Regístrate aquí</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.formContainer}>
+            <View style={styles.inputContainer}>
+              <Icon name="email-outline" size={24} style={styles.icon} /> 
+              <TextInput
+                style={styles.input}
+                placeholder="Correo electrónico"
+                placeholderTextColor={colors.thin}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              /> 
+            </View>
 
-    </View>
-    
-  )
+            <View style={styles.inputContainer}>
+              <Icon name="lock-outline" size={24} style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                placeholderTextColor={colors.thin}
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+                autoCapitalize="none"
+              />
+            </View>
+
+            {error && (
+              <Text style={styles.errorMessage}>
+                Revisa tus credenciales e intenta nuevamente 😕
+              </Text>
+            )}
+
+            <TouchableOpacity 
+              style={styles.loginButton} 
+              onPress={handleLogin}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+            </TouchableOpacity>
+
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>¿Aún no tienes una cuenta? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerLink}>Regístrate aquí</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </LinearGradient>
+      </KeyboardAvoidingView>
+    )
 }
 
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.variante2,
-      justifyContent: 'center',
+    },
+    logoContainer: {
       alignItems: 'center',
-      paddingHorizontal: 30,
+      paddingTop: 60,
+      paddingBottom: 40,
     },
     logo: {
-      width: 100,
-      height: 100,
+      width: 120,
+      height: 120,
       resizeMode: 'contain',
-      marginBottom: 30,
-    },
-    title: {
-      fontSize: 18,
-      color: colors.subtle,
-      fontWeight: '600',
       marginBottom: 20,
+    },
+    welcomeText: {
+      fontSize: 28,
+      color: colors.luminous,
+      fontWeight: 'bold',
+      marginBottom: 10,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.thin,
+      textAlign: 'center',
+    },
+    formContainer: {
+      backgroundColor: colors.luminous,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      paddingHorizontal: 25,
+      paddingTop: 40,
+      paddingBottom: 40,
+      flex: 1,
     },
     inputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.variante5,
-      borderRadius: 10,
-      marginBottom: 15,
-      paddingHorizontal: 10,
-      borderWidth: 1,
-      borderColor: colors.thin,
+      backgroundColor: colors.fondoClaro,
+      borderRadius: 15,
+      marginBottom: 20,
+      paddingHorizontal: 15,
+      height: 60,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 5,
     },
     icon: {
+      color: colors.variante8,
       marginRight: 10,
     },
     input: {
       flex: 1,
-      height: 50,
       fontSize: 16,
-      color: colors.thin,
-    },
-    forgotPassword: {
-      color: colors.thin,
-      fontSize: 14,
-      marginBottom: 20,
+      color: colors.default,
     },
     loginButton: {
       backgroundColor: colors.exito,
       paddingVertical: 15,
-      paddingHorizontal: 50,
-      borderRadius: 30,
-      marginBottom: 30,
+      borderRadius: 15,
+      marginTop: 10,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
     },
     loginButtonText: {
-      color: colors.delicate,
-      fontSize: 16,
+      color: colors.luminous,
+      fontSize: 18,
       fontWeight: 'bold',
+      textAlign: 'center',
     },
     registerContainer: {
       flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 20,
     },
     registerText: {
-      color: colors.subtle,
-      fontSize: 14,
+      color: colors.thin,
+      fontSize: 16,
     },
     registerLink: {
-      color: colors.variante8,
-      fontSize: 14,
+      color: colors.exito,
+      fontSize: 16,
       fontWeight: 'bold',
     },
     errorMessage: {
-      color: colors.exito,  
+      color: colors.error,
       fontSize: 14,
-      marginBottom: 10,
+      textAlign: 'center',
+      marginBottom: 15,
     },
-  });
+})
 
 export default LoginScreen
