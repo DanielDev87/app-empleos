@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Platform } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../services/firebaseConfig';
 import { updateProfile, updateEmail, updatePassword } from 'firebase/auth';
@@ -9,6 +9,8 @@ import ModalEditProfile from '../components/ModalEditProfile';
 import ModalImagePicker from '../components/ModalImagePicker';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dnjpuudn1/image/upload';
 const UPLOAD_PRESET = 'IMAGEDANIEL';
@@ -45,8 +47,9 @@ const SettingsScreen = () => {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
+        aspect: [1, 1],
         quality: 1,
       });
 
@@ -61,7 +64,6 @@ const SettingsScreen = () => {
 
       setImageUri(result.assets[0].uri);
     } catch (error) {
-      console.error('Error seleccionando la imagen:', error);
       showMessage({
         message: 'Error',
         description: 'Ocurrió un error al intentar seleccionar la imagen.',
@@ -70,9 +72,46 @@ const SettingsScreen = () => {
     }
   };
 
+  const handleTakePhoto = async () => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        showMessage({
+          message: 'Permiso denegado',
+          description: 'Se necesita permiso para acceder a la cámara.',
+          type: 'danger',
+        });
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (result.canceled) {
+        showMessage({
+          message: 'Cancelado',
+          description: 'No se tomó ninguna foto.',
+          type: 'info',
+        });
+        return;
+      }
+
+      setImageUri(result.assets[0].uri);
+    } catch (error) {
+      showMessage({
+        message: 'Error',
+        description: 'Ocurrió un error al intentar tomar la foto.',
+        type: 'danger',
+      });
+    }
+  };
+
   const uploadImage = async () => {
     if (!user || !imageUri) {
-      console.error('Usuario o URI de imagen no válidos:', { user, imageUri });
       return;
     }
     try {
@@ -104,7 +143,6 @@ const SettingsScreen = () => {
         throw new Error(data.error?.message || 'No se pudo obtener la URL de la imagen subida');
       }
     } catch (error) {
-      console.error('Error subiendo la imagen:', error);
       showMessage({
         message: 'Error',
         description: error.message,
@@ -145,6 +183,13 @@ const SettingsScreen = () => {
           description: 'Correo actualizado correctamente.',
           type: 'success',
         });
+      } else if (modalTitle === 'Contraseña') {
+        await updatePassword(auth.currentUser, fieldValue);
+        showMessage({
+          message: 'Éxito',
+          description: 'Contraseña actualizada correctamente.',
+          type: 'success',
+        });
       }
     } catch (error) {
       showMessage({
@@ -158,52 +203,85 @@ const SettingsScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      
-      <Text style={styles.subtitle}>Ajustes</Text>
-      <Text style={styles.sectionTitle}>Sobre tu cuenta</Text>
-
-      {/* Foto de perfil */}
-      <View style={styles.row}>
-        <View style={styles.info}>
-          <Text style={styles.label}>Foto de perfil</Text>
-          <Image source={{ uri: imageUri || defaultImage }} style={styles.profileImage} />
-        </View>
+    <LinearGradient 
+      colors={[colors.variante2, colors.variante5]} 
+      style={styles.container}
+    >
+      <View style={styles.header}>
         <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => setImageModalVisible(true)}
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
         >
-          <Text style={styles.editText}>Cambiar</Text>
+          <Ionicons name="arrow-back" size={24} color={colors.luminous} />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Ajustes</Text>
+        <Image 
+          source={require('../../assets/avatardanidev.png')} 
+          style={styles.avatarLogo}
+        />
       </View>
 
-      {/* Nombre */}
-      <View style={styles.row}>
-        <View style={styles.info}>
-          <Text style={styles.label}>Nombre</Text>
-          <Text style={styles.infoText}>{user?.displayName || 'Sin nombre'}</Text>
+      <ScrollView style={styles.content}>
+        <View style={styles.profileSection}>
+          <View style={styles.imageContainer}>
+            <Image 
+              source={{ uri: imageUri || defaultImage }} 
+              style={styles.profileImage} 
+            />
+            <TouchableOpacity
+              style={styles.editImageButton}
+              onPress={() => setImageModalVisible(true)}
+            >
+              <Ionicons name="camera" size={20} color={colors.luminous} />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.profileName}>{user?.displayName || 'Sin nombre'}</Text>
+          <Text style={styles.profileEmail}>{user?.email || 'Sin correo'}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => handleEdit('Nombre')}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* Correo */}
-      <View style={styles.row}>
-        <View style={styles.info}>
-          <Text style={styles.label}>Correo electrónico</Text>
-          <Text style={styles.infoText}>{user?.email || 'Sin correo'}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Información Personal</Text>
+          
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Nombre</Text>
+              <Text style={styles.settingValue}>{user?.displayName || 'Sin nombre'}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => handleEdit('Nombre')}
+            >
+              <Text style={styles.editButtonText}>Cambiar</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Correo electrónico</Text>
+              <Text style={styles.settingValue}>{user?.email || 'Sin correo'}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => handleEdit('Correo')}
+            >
+              <Text style={styles.editButtonText}>Cambiar</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Contraseña</Text>
+              <Text style={styles.settingValue}>••••••••</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => handleEdit('Contraseña')}
+            >
+              <Text style={styles.editButtonText}>Cambiar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => handleEdit('Correo')}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
 
       <ModalEditProfile
         visible={isEditModalVisible}
@@ -212,86 +290,141 @@ const SettingsScreen = () => {
         onChangeText={setFieldValue}
         onSave={handleSave}
         onCancel={() => setEditModalVisible(false)}
+        isPassword={modalTitle === 'Contraseña'}
       />
 
       <ModalImagePicker
         visible={isImageModalVisible}
         imageUri={imageUri}
         onChooseImage={handleChooseImage}
+        onTakePhoto={handleTakePhoto}
         onSave={uploadImage}
         onCancel={() => setImageModalVisible(false)}
       />
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Volver</Text>
-      </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: colors.variante6,
   },
-  subtitle: {
-    fontSize: 24,
-    color: colors.luminous,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 15,
+  },
+  headerTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    color: colors.luminous,
+  },
+  backButton: {
+    padding: 10,
+  },
+  avatarLogo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: colors.luminous,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+  profileSection: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.delicate,
+  },
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 15,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: colors.variante8,
+  },
+  editImageButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.variante8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.luminous,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.default,
+    marginBottom: 5,
+  },
+  profileEmail: {
+    fontSize: 16,
+    color: colors.thin,
+  },
+  section: {
+    padding: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    color: colors.luminous,
     fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    color: colors.default,
     marginBottom: 15,
   },
-  info: {
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.fondoClaro,
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  settingInfo: {
     flex: 1,
   },
-  label: {
+  settingLabel: {
     fontSize: 14,
-    color: colors.luminous,
-    fontWeight: 'bold',
+    color: colors.thin,
+    marginBottom: 4,
   },
-  infoText: {
+  settingValue: {
     fontSize: 16,
-    color: colors.variante2,
+    color: colors.default,
+    fontWeight: '500',
   },
   editButton: {
     backgroundColor: colors.variante8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 8,
+    marginLeft: 10,
   },
-  editText: {
+  editButtonText: {
+    color: colors.luminous,
     fontSize: 14,
-    color: '#fff',
     fontWeight: 'bold',
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  backButton: {
-    marginBottom: 20,
-    padding: 10,
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

@@ -1,36 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image, ScrollView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import colors from '../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signOut } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
 import { showMessage } from 'react-native-flash-message';
+import { Ionicons } from '@expo/vector-icons';
 
 const UserScreen = ({ navigation }) => {
   const { user } = useAuth();
-  const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // Estado para el modal de confirmación
-  const [imageUri, setImageUri] = useState(null)
-  const defaultImage = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+  const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+  const defaultImage = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
 
   useEffect(() => {
     if (user && user.photoURL) {
-      setImageUri(user.photoURL)
+      setImageUri(user.photoURL);
     } else {
-      setImageUri(defaultImage)
+      setImageUri(defaultImage);
     }
-  }, [user])
+  }, [user]);
 
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Cierra la sesión con Firebase
+      await signOut(auth);
       showMessage({
         message: '👋',
         description: 'Has cerrado sesión correctamente.',
         type: 'success',
       });
-      setLogoutModalVisible(false); // Cierra el modal
-      navigation.navigate('Login'); // Navega a la pantalla de inicio de sesión
+      setLogoutModalVisible(false);
+      navigation.navigate('Login');
     } catch (error) {
       showMessage({
         message: '😵‍💫',
@@ -40,26 +41,65 @@ const UserScreen = ({ navigation }) => {
     }
   };
 
-  return (
-    <LinearGradient colors={colors.gradienteAccion} style={styles.container}>
-      <View style={styles.info}>
-          <Text style={styles.label}>Foto de perfil</Text>
-          <Image source={{ uri: imageUri || defaultImage }} style={styles.profileImage} />
-      </View>
-      <View style={styles.header}>
-        <Text style={styles.title}>{user?.displayName || 'Usuario'}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-          <Text style={styles.editButton}>Ajustes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={() => setLogoutModalVisible(true)} // Abre el modal de confirmación
-        >
-          <Text style={styles.logoutText}>Cerrar sesión</Text>
-        </TouchableOpacity>
-      </View>
+  const menuItems = [
+    {
+      icon: 'document-text',
+      title: 'Mi Hoja de Vida',
+      onPress: () => navigation.navigate('Resume'),
+      color: colors.principal
+    },
+    {
+      icon: 'briefcase',
+      title: 'Mis Empleos',
+      onPress: () => navigation.navigate('ProfileStack', { screen: 'MyJobs' }),
+      color: colors.variante8
+    },
+    {
+      icon: 'settings',
+      title: 'Ajustes',
+      onPress: () => navigation.navigate('Settings'),
+      color: colors.variante8
+    },
+    {
+      icon: 'information-circle',
+      title: 'Acerca de',
+      onPress: () => navigation.navigate('About'),
+      color: colors.variante5
+    },
+    {
+      icon: 'log-out',
+      title: 'Cerrar Sesión',
+      onPress: () => setLogoutModalVisible(true),
+      color: colors.error
+    }
+  ];
 
-      {/* Modal de confirmación para cerrar sesión */}
+  return (
+    <ScrollView style={styles.scrollView}>
+      <LinearGradient colors={colors.gradienteSecundario} style={styles.container}>
+        <View style={styles.profileSection}>
+          <Image source={{ uri: imageUri || defaultImage }} style={styles.profileImage} />
+          <Text style={styles.userName}>{user?.displayName || 'Usuario'}</Text>
+          <Text style={styles.userEmail}>{user?.email}</Text>
+        </View>
+
+        <View style={styles.menuContainer}>
+          {menuItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.menuItem}
+              onPress={item.onPress}
+            >
+              <View style={[styles.iconContainer, { backgroundColor: item.color }]}>
+                <Ionicons name={item.icon} size={24} color={colors.luminous} />
+              </View>
+              <Text style={styles.menuItemText}>{item.title}</Text>
+              <Ionicons name="chevron-forward" size={24} color={colors.thin} />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </LinearGradient>
+
       <Modal
         visible={isLogoutModalVisible}
         transparent={true}
@@ -68,50 +108,95 @@ const UserScreen = ({ navigation }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Cerrar Sesión</Text>
             <Text style={styles.modalText}>¿Estás seguro de que deseas cerrar sesión?</Text>
             <View style={styles.modalButtons}>
-              <Button title="Cancelar" onPress={() => setLogoutModalVisible(false)} />
-              <Button title="Cerrar sesión" onPress={handleLogout} />
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setLogoutModalVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.logoutModalButton]}
+                onPress={handleLogout}
+              >
+                <Text style={styles.logoutModalButtonText}>Cerrar Sesión</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-    </LinearGradient>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.fondoClaro,
   },
-  header: {
-    alignItems: 'center',
+  container: {
+    minHeight: '100%',
   },
-  title: {
+  profileSection: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: colors.luminous,
+    marginBottom: 15,
+  },
+  userName: {
     fontSize: 24,
     color: colors.luminous,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 5,
   },
-  editButton: {
+  userEmail: {
     fontSize: 16,
-    color: colors.variante8,
-    fontWeight: 'bold',
+    color: colors.variante5,
+  },
+  menuContainer: {
+    backgroundColor: colors.fondoClaro,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+    flex: 1,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.luminous,
+    padding: 15,
+    borderRadius: 12,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  logoutButton: {
-    backgroundColor: colors.variante2,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 20,
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
   },
-  logoutText: {
+  menuItemText: {
+    flex: 1,
     fontSize: 16,
-    color: '#fff',
-    fontWeight: 'bold',
+    color: colors.default,
+    fontWeight: '600',
   },
   modalContainer: {
     flex: 1,
@@ -121,13 +206,20 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '80%',
+    backgroundColor: colors.luminous,
+    borderRadius: 20,
     padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
     alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.default,
+    marginBottom: 10,
   },
   modalText: {
     fontSize: 16,
+    color: colors.thin,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -136,21 +228,26 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  logoutButton: {
-    backgroundColor: '#A72C2A',
-    padding: 15,
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
     borderRadius: 10,
+    marginHorizontal: 5,
     alignItems: 'center',
-    marginTop: 20,
   },
-  logoutText: {
-    color: '#FFF',
-    fontSize: 16,
+  cancelButton: {
+    backgroundColor: colors.fondoClaro,
+  },
+  logoutModalButton: {
+    backgroundColor: colors.error,
+  },
+  cancelButtonText: {
+    color: colors.default,
+    fontWeight: 'bold',
+  },
+  logoutModalButtonText: {
+    color: colors.luminous,
+    fontWeight: 'bold',
   },
 });
 
