@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "112820595154",
+    "project_id": "proyecto-app-empleos",
+    "storage_bucket": "proyecto-app-empleos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112820595154:android:c986b7bb464a632070400b",
+        "android_client_info": {
+          "package_name": "com.danidev.app_empleos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMZbmI9LyAsSe_D8oNrFybUFud-eVtEDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

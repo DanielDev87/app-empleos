@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Función auxiliar para verificar autenticación
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Función para verificar si el usuario está accediendo a sus propios datos
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Reglas para la colección de resumes
+    match /resumes/{userId} {
+      // Permitir lectura y escritura solo al propietario del documento
+      allow read, write: if isOwner(userId);
+    }
+
+    // Reglas para la colección de prueba (desarrollo)
+    match /_test_connection/{docId} {
+      // Permitir solo lectura para pruebas de conectividad
+      allow read: if isAuthenticated();
+    }
+
+    // Regla temporal para desarrollo (expira en 30 días)
+    match /{document=**} {
+      allow read, write: if 
+        request.time < timestamp.date(2025, 6, 22) &&
+        isAuthenticated();
+    }
+  }
+} 
