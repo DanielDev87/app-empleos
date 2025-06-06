@@ -14,32 +14,32 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 
 const AboutScreen = ({ navigation }) => {
-  const appVersion = '1.0.0';
-  const developerEmail = 'danielhymtj@icloud.com';
+  const appVersion = process.env.EXPO_PUBLIC_APP_VERSION;
+  const developerEmail = process.env.EXPO_PUBLIC_DEVELOPER_EMAIL;
   
   const socialLinks = [
     {
       name: 'YouTube',
       icon: 'logo-youtube',
-      url: 'https://www.youtube.com/@DaniDev87',
+      url: process.env.EXPO_PUBLIC_YOUTUBE,
       color: '#FF0000'
     },
     {
       name: 'GitHub',
       icon: 'logo-github',
-      url: 'https://github.com/DanielDev87',
+      url: process.env.EXPO_PUBLIC_GITHUB,
       color: '#333'
     },
     {
       name: 'LinkedIn',
       icon: 'logo-linkedin',
-      url: 'https://www.linkedin.com/in/daniel-felipe-agudelo-molina/',
+      url: process.env.EXPO_PUBLIC_LINKEDIN,
       color: '#0077B5'
     },
     {
       name: 'Portfolio',
       icon: 'globe-outline',
-      url: 'https://aquamarine-beijinho-5f027f.netlify.app/',
+      url: process.env.EXPO_PUBLIC_PORTFOLIO,
       color: '#4CAF50'
     }
   ];

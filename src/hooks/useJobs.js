@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 
 // Credenciales de la API
 const API_CREDENTIALS = {
-  key: '95fad8dd19mshfab31dbe0960749p1c436djsn9399bef73fb9',
-  host: 'jsearch.p.rapidapi.com'
+  key: process.env.EXPO_PUBLIC_RAPID_API_KEY,
+  host: process.env.EXPO_PUBLIC_RAPID_API_HOST,
 };
 
-const BASE_URL = 'https://jsearch.p.rapidapi.com/search';
+const BASE_URL = process.env.EXPO_PUBLIC_RAPID_API_URL;
 
 const useJobs = (initialQuery = '', page = 1, filters = {}) => {
   const [jobs, setJobs] = useState([])
@@ -34,6 +34,9 @@ const useJobs = (initialQuery = '', page = 1, filters = {}) => {
         num_pages: '1',
         ...filters
       })
+
+      console.log('BASE_URL:', BASE_URL);
+      console.log('API_CREDENTIALS:', API_CREDENTIALS);
 
       const response = await fetch(`${BASE_URL}?${searchParams.toString()}`, {
         method: 'GET',

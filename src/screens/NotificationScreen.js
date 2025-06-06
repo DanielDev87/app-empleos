@@ -103,7 +103,7 @@ const NotificationScreen = () => {
       >
         <Text style={styles.testButtonText}>Agregar notificación de prueba</Text>
       </TouchableOpacity>
-      {Constants.appOwnership === 'expo' && (
+      {Constants.executionEnvironment === 'storeClient' && (
         <View style={styles.warningContainer}>
           <Ionicons name="warning-outline" size={20} color={colors.error} />
           <Text style={styles.warningText}>

@@ -12,7 +12,7 @@ const UserScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
   const [imageUri, setImageUri] = useState(null);
-  const defaultImage = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  const defaultImage = process.env.EXPO_PUBLIC_DEFAULT_PROFILE_IMAGE;
 
   useEffect(() => {
     if (user && user.photoURL) {

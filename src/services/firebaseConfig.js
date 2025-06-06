@@ -6,12 +6,12 @@ import Constants from 'expo-constants';
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyA7WpFJX6iHAXZrXvXjHlxjrPXoHUZRbPg",
-  authDomain: "proyecto-app-empleos.firebaseapp.com",
-  projectId: "proyecto-app-empleos",
-  storageBucket: "proyecto-app-empleos.appspot.com",  // URL directa del bucket
-  messagingSenderId: "1048561511871",
-  appId: "1:1048561511871:web:c5a8e63f4b4b2c9f05cca5"
+  apiKey: process.env.EXPO_PUBLIC_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_APP_ID,
 };
 
 // Initialize Firebase only if it hasn't been initialized

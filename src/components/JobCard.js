@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import colors from '../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 
+const DEFAULT_COMPANY_LOGO = process.env.EXPO_PUBLIC_DEFAULT_COMPANY_LOGO;
 const JobCard = ({ job, onPress }) => {
   if (!job) return null;
 
@@ -21,7 +22,7 @@ const JobCard = ({ job, onPress }) => {
         <View style={styles.header}>
           <Image 
             source={{ 
-              uri: employer_logo || 'https://via.placeholder.com/50'
+              uri: employer_logo || DEFAULT_COMPANY_LOGO
             }} 
             style={styles.logo}
             defaultSource={require('../../assets/default-company.png')}

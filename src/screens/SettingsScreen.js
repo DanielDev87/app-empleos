@@ -12,14 +12,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dnjpuudn1/image/upload';
-const UPLOAD_PRESET = 'IMAGEDANIEL';
+const CLOUDINARY_URL = process.env.EXPO_PUBLIC_CLOUDINARY_URL;
+const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_PRESET;
+const defaultImage = process.env.EXPO_PUBLIC_DEFAULT_COMPANY_LOGO;
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { user, setUser } = useAuth();
   const [imageUri, setImageUri] = useState(null);
-  const defaultImage = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
   const [isEditModalVisible, setEditModalVisible] = useState(false);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -47,7 +47,7 @@ const SettingsScreen = () => {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['image'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
